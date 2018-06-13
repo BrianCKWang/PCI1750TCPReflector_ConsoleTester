@@ -17,29 +17,38 @@ namespace PCI1750TCPReflector_ConsoleTester
             Int32 port = 1700;
             int message_int = 0;
             string message = "";
+            bool manualinput = true;
 
             TCPDigitalIOTranslator translator = new TCPDigitalIOTranslator();
             StaticDIO staticDIO = new StaticDIO();
             while (true)
             {
-                
+                //staticDIO.RunStaticDI();
+                //staticDIO.RunStaticDO();
 
-                staticDIO.RunStaticDI();
                 //Console.WriteLine("ProjectNum: {0}, RobotNum: {1}, Command: {2}.", staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command);
                 //Console.WriteLine("Execute: {0}, StatusAck: {1}.", staticDIO.Execute, staticDIO.StatusAck);
 
                 //Console.WriteLine("Project TCP command: {0}.", translator.test_getProjectTCPCommand(staticDIO.ProjectNum, staticDIO.Command));
                 //Console.WriteLine("Robot TCP command: {0}.", translator.test_getRobotTCPCommand(staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command));
+                byte[] testResponse = { 0, 215, 0, 2 };
+                Console.WriteLine("Status: {0}.", translator.getDOfromTCPResponse(testResponse));
 
-                Console.WriteLine("TCP command: {0}.", translator.getTCPCommand(staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command));
-
-                Console.Write("Value to send: ");
-                //message_int = Convert.ToInt32(Console.ReadLine());
-                message_int = translator.getTCPCommand(staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command);
+                if (manualinput)
+                {
+                    Console.Write("Value to send: ");
+                    message_int = Convert.ToInt32(Console.ReadLine());
+                }
+                else
+                {
+                    Console.WriteLine("TCP command: {0}.", translator.getTCPCommand(staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command));
+                    message_int = translator.getTCPCommand(staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command);
+                }
+                
                 if (checkMessageValidity(message_int))
                 {
                     Console.WriteLine("Message is valid.");
-                    if(staticDIO.Execute == 1)
+                    if(staticDIO.Execute == 1 || manualinput)
                     {
                         message = message_int.ToString("X");
                         completeHexMessage(ref message);
@@ -57,12 +66,6 @@ namespace PCI1750TCPReflector_ConsoleTester
 
                 
                 Thread.Sleep(100);
-                //message_int = translator.getTCPCommand(staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command);
-
-
-
-
-
 
             }
         }
@@ -120,7 +123,6 @@ namespace PCI1750TCPReflector_ConsoleTester
                 Int32 bytes = stream.Read(data_read, 0, data_read.Length);
 
                 Console.WriteLine("project: {0}, {1}, {2}, {3}", data_read[0].ToString(), data_read[1].ToString(), data_read[2].ToString(), data_read[3].ToString());
-
 
                 // Close everything.
                 stream.Close();

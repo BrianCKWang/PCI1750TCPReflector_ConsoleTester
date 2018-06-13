@@ -8,17 +8,71 @@ namespace PCI1750TCPReflector_ConsoleTester
 {
     class TCPDigitalIOTranslator
     {
-        private static Dictionary<byte, byte> Dic_TCPtoDIO_response = new Dictionary<byte, byte>();
+        private static Dictionary<byte, byte> Dic_TCPtoDIO_projectResponse = new Dictionary<byte, byte>();
+        private static Dictionary<byte, byte> Dic_TCPtoDIO_robotResponse = new Dictionary<byte, byte>();
         private static Dictionary<byte, byte> Dic_DIOtoTCP_command = new Dictionary<byte, byte>();
         private static Dictionary<byte, byte> Dic_projectNumber = new Dictionary<byte, byte>();
-        private static Dictionary<byte, byte> Dic_TCPCommand = new Dictionary<byte, byte>();
         private static Dictionary<byte, byte> Dic_RobotCommand = new Dictionary<byte, byte>();
         
         public TCPDigitalIOTranslator()
         {
             populateDictionary();
         }
+        public short getDOfromTCPResponse(byte[] response)
+        {
+            byte commandSent = 0;
+            byte responseCode = 0;
+            byte PM_Command = 0;
+            
 
+            if (response.Length == 4)
+            {
+                commandSent = response[1];
+                Console.WriteLine("commandSent: {0}.", commandSent);
+                responseCode = response[3];
+                Console.WriteLine("responseCode: {0}.", responseCode);
+                if (isProjectCommand(commandSent))
+                {
+                    try
+                    {
+                        Dic_TCPtoDIO_projectResponse.TryGetValue(responseCode, out PM_Command);
+                        Console.WriteLine("ProjectCommand PM_Command: {0}.", PM_Command);
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                        Console.WriteLine("Key = {0} is not found.", commandSent);
+                    }
+
+                }
+                else
+                {
+                    try
+                    {
+                        Dic_TCPtoDIO_robotResponse.TryGetValue(responseCode, out PM_Command);
+                        Console.WriteLine("RobotCommand PM_Command: {0}.", PM_Command);
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                        Console.WriteLine("Key = {0} is not found.", commandSent);
+                    }
+                }
+            }
+            return PM_Command;
+
+        }
+        private bool isProjectCommand(byte commandSent)
+        {
+            commandSent /= 10;
+            commandSent %= 10;
+            if (commandSent <= 1)
+            {
+                return true;
+            }
+            else
+            { 
+               return false;
+            }
+        }
         public int getTCPCommand(byte projectNum, byte robotNum, byte command)
         {
             switch (command)
@@ -97,7 +151,7 @@ namespace PCI1750TCPReflector_ConsoleTester
             {
                 Console.WriteLine("Key = {0} is not found.", command);
             }
-            return Convert.ToInt32(PM_projectNum*100 + PM_robotNum*10 + PM_command);
+            return Convert.ToInt32(PM_projectNum * 100 + PM_robotNum * 10 + PM_command);
         }
         private byte getRobotDigit(byte robotNum)
         {
@@ -107,45 +161,24 @@ namespace PCI1750TCPReflector_ConsoleTester
         {
             try
             {
-
-
                 //Project status
-                //DIOtoTCP_response.Add(0b00001, 0x06);
-                //DIOtoTCP_response.Add(0b00010, 0x07);
-                //DIOtoTCP_response.Add(0b00011, 0x01);
-                //DIOtoTCP_response.Add(0b00100, 0x02);
-                //DIOtoTCP_response.Add(0b00101, 0x08);
-                //DIOtoTCP_response.Add(0b00110, 0x03);
-                //DIOtoTCP_response.Add(0b00111, 0x04);
-                //DIOtoTCP_response.Add(0b01000, 0x05);
+                Dic_TCPtoDIO_projectResponse.Add(0x06, 0b00001);
+                Dic_TCPtoDIO_projectResponse.Add(0x07, 0b00010);
+                Dic_TCPtoDIO_projectResponse.Add(0x01, 0b00011);
+                Dic_TCPtoDIO_projectResponse.Add(0x02, 0b00100);
+                Dic_TCPtoDIO_projectResponse.Add(0x08, 0b00101);
+                Dic_TCPtoDIO_projectResponse.Add(0x03, 0b00110);
+                Dic_TCPtoDIO_projectResponse.Add(0x04, 0b00111);
+                Dic_TCPtoDIO_projectResponse.Add(0x05, 0b01000);
 
-                ////Robot status
-                //DIOtoTCP_response.Add(0b10001, 0x01);
-                //DIOtoTCP_response.Add(0b10010, 0x03);
-                //DIOtoTCP_response.Add(0b10011, 0x02);
-                //DIOtoTCP_response.Add(0b10100, 0x04);
-                //DIOtoTCP_response.Add(0b10101, 0x05);
-                //DIOtoTCP_response.Add(0b10110, 0x06);
-                //DIOtoTCP_response.Add(0b10111, 0x07);
-
-                ////Project status
-                //TCPtoDIO_response.Add(0x06, 0b00001);
-                //TCPtoDIO_response.Add(0x07, 0b00010);
-                //TCPtoDIO_response.Add(0x01, 0b00011);
-                //TCPtoDIO_response.Add(0x02, 0b00100);
-                //TCPtoDIO_response.Add(0x08, 0b00101);
-                //TCPtoDIO_response.Add(0x03, 0b00110);
-                //TCPtoDIO_response.Add(0x04, 0b00111);
-                //TCPtoDIO_response.Add(0x05, 0b01000);
-
-                ////Robot status
-                //TCPtoDIO_response.Add(0x01, 0b10001);
-                //TCPtoDIO_response.Add(0x03, 0b10010);
-                //TCPtoDIO_response.Add(0x02, 0b10011);
-                //TCPtoDIO_response.Add(0x04, 0b10100);
-                //TCPtoDIO_response.Add(0x05, 0b10101);
-                //TCPtoDIO_response.Add(0x06, 0b10110);
-                //TCPtoDIO_response.Add(0x07, 0b10111);
+                //Robot status
+                Dic_TCPtoDIO_robotResponse.Add(0x01, 0b10001);
+                Dic_TCPtoDIO_robotResponse.Add(0x03, 0b10010);
+                Dic_TCPtoDIO_robotResponse.Add(0x02, 0b10011);
+                Dic_TCPtoDIO_robotResponse.Add(0x04, 0b10100);
+                Dic_TCPtoDIO_robotResponse.Add(0x05, 0b10101);
+                Dic_TCPtoDIO_robotResponse.Add(0x06, 0b10110);
+                Dic_TCPtoDIO_robotResponse.Add(0x07, 0b10111);
 
                 //
                 Dic_DIOtoTCP_command.Add(1, 11);

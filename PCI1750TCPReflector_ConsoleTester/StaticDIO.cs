@@ -130,7 +130,7 @@ namespace PCI1750TCPReflector_ConsoleTester
                 fullResponse = (short)(buffer[0] | buffer[1] << 8);
                 extractAndsetNum(fullResponse);
 
-                Thread.Sleep(100);
+                //Thread.Sleep(100);
 
             }
             catch (Exception e)
@@ -148,7 +148,7 @@ namespace PCI1750TCPReflector_ConsoleTester
             }
         }
 
-        public void StaticDO()
+        public void RunStaticDO()
         {
             //-----------------------------------------------------------------------------------
             // Configure the following parameters before running the demo
@@ -231,7 +231,7 @@ namespace PCI1750TCPReflector_ConsoleTester
             {
                 // Step 4: Close device and release any allocated resource.
                 instantDoCtrl.Dispose();
-                Console.ReadKey(false);
+                //Console.ReadKey(false);
             }
 
         }
