@@ -18,6 +18,7 @@ namespace PCI1750TCPReflector_ConsoleTester
             int message_int = 0;
             string message = "";
             bool manualinput = true;
+            TcpClient client = new TcpClient(IP, port);
 
             TCPDigitalIOTranslator translator = new TCPDigitalIOTranslator();
             StaticDIO staticDIO = new StaticDIO();
@@ -56,7 +57,7 @@ namespace PCI1750TCPReflector_ConsoleTester
 
                         Console.WriteLine("Will sent: {0}", message);
 
-                        responsebyte = ConnectAndSend(IP, port, message, message_int);
+                        responsebyte = ConnectAndSend(client, message, message_int);
                         Console.WriteLine("TCP Status: {0}.", translator.getDOfromTCPResponse(responsebyte));
                     }
                     
@@ -95,13 +96,13 @@ namespace PCI1750TCPReflector_ConsoleTester
                 hex = "0" + hex;
             }
         }
-        static byte[] ConnectAndSend(String server, Int32 port, String message, int message_int)
+        static byte[] ConnectAndSend(TcpClient client, String message, int message_int)
         {
             // Buffer to store the response bytes.
             Byte[] data_read = new Byte[4];
             try
             {
-                TcpClient client = new TcpClient(server, port);
+                
 
                 Byte[] data = { 0, 0 };
                 Byte[] data_message = StringToByteArray(message);
@@ -117,19 +118,14 @@ namespace PCI1750TCPReflector_ConsoleTester
 
                 // Receive the TcpServer.response.
 
-                
-
-                // String to store the response ASCII representation.
-                String responseData = String.Empty;
-
                 // Read the first batch of the TcpServer response bytes.
                 Int32 bytes = stream.Read(data_read, 0, data_read.Length);
 
                 Console.WriteLine("project: {0}, {1}, {2}, {3}", data_read[0].ToString(), data_read[1].ToString(), data_read[2].ToString(), data_read[3].ToString());
                 
                 // Close everything.
-                stream.Close();
-                client.Close();
+                //stream.Close();
+                //client.Close();
                 
             }
             catch (ArgumentNullException e)
