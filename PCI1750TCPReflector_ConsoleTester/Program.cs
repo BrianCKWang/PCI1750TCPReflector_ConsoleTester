@@ -34,7 +34,7 @@ namespace PCI1750TCPReflector_ConsoleTester
                 
                 Console.WriteLine("Project TCP command: {0}.", translator.test_getProjectTCPCommand(1, 1));
                 Console.WriteLine("Robot TCP command: {0}.", translator.test_getRobotTCPCommand(1, 2, 9));
-                StaticDIO.StaticDI();
+                //StaticDIO.StaticDI();
                 //StaticDIO.StaticDO();
 
             }

@@ -11,7 +11,36 @@ namespace PCI1750TCPReflector_ConsoleTester
     
     class StaticDIO
     {
-        
+        private byte _projectNum;
+        private byte _robotNum;
+        private byte _command;
+        private static bool StaticIO_firstTime;
+        public StaticDIO()
+        {
+            _projectNum = 0;
+            _robotNum = 0;
+            _command = 0;
+            StaticIO_firstTime = false;
+        }
+        public byte ProjectNum
+        {
+            get {
+                if (!StaticIO_firstTime) { StaticDI(); }
+                return _projectNum; }
+        }
+        public byte RobotNum
+        {
+            get {
+                if (!StaticIO_firstTime) { StaticDI(); }
+                return _robotNum; }
+        }
+        public byte Command
+        {
+            get {
+                if (!StaticIO_firstTime) { StaticDI(); }
+                return _command; }
+        }
+
         public static void StaticDI()
         {
             //-----------------------------------------------------------------------------------
@@ -22,6 +51,7 @@ namespace PCI1750TCPReflector_ConsoleTester
             string profilePath = "../../profile/PCI-1750.xml";
             int startPort = 0;
             int portCount = 2;
+            StaticIO_firstTime = true;
             ErrorCode errorCode = ErrorCode.Success;
 
             // Step 1: Create a 'InstantDiCtrl' for DI function.
