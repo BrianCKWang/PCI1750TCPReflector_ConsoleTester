@@ -31,8 +31,9 @@ namespace PCI1750TCPReflector_ConsoleTester
 
                 //Console.WriteLine("Project TCP command: {0}.", translator.test_getProjectTCPCommand(staticDIO.ProjectNum, staticDIO.Command));
                 //Console.WriteLine("Robot TCP command: {0}.", translator.test_getRobotTCPCommand(staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command));
-                byte[] testResponse = { 0, 215, 0, 2 };
-                Console.WriteLine("Status: {0}.", translator.getDOfromTCPResponse(testResponse));
+                byte[] testResponse = { 2, 103, 0, 7};
+                byte[] responsebyte = { 0, 0, 0, 0 };
+                //Console.WriteLine("Test Status: {0}.", translator.getDOfromTCPResponse(testResponse));
 
                 if (manualinput)
                 {
@@ -55,7 +56,8 @@ namespace PCI1750TCPReflector_ConsoleTester
 
                         Console.WriteLine("Will sent: {0}", message);
 
-                        ConnectAndSend(IP, port, message, message_int);
+                        responsebyte = ConnectAndSend(IP, port, message, message_int);
+                        Console.WriteLine("TCP Status: {0}.", translator.getDOfromTCPResponse(responsebyte));
                     }
                     
                 }
@@ -93,8 +95,10 @@ namespace PCI1750TCPReflector_ConsoleTester
                 hex = "0" + hex;
             }
         }
-        static void ConnectAndSend(String server, Int32 port, String message, int message_Dec)
+        static byte[] ConnectAndSend(String server, Int32 port, String message, int message_int)
         {
+            // Buffer to store the response bytes.
+            Byte[] data_read = new Byte[4];
             try
             {
                 TcpClient client = new TcpClient(server, port);
@@ -113,8 +117,7 @@ namespace PCI1750TCPReflector_ConsoleTester
 
                 // Receive the TcpServer.response.
 
-                // Buffer to store the response bytes.
-                Byte[] data_read = new Byte[4];
+                
 
                 // String to store the response ASCII representation.
                 String responseData = String.Empty;
@@ -123,10 +126,11 @@ namespace PCI1750TCPReflector_ConsoleTester
                 Int32 bytes = stream.Read(data_read, 0, data_read.Length);
 
                 Console.WriteLine("project: {0}, {1}, {2}, {3}", data_read[0].ToString(), data_read[1].ToString(), data_read[2].ToString(), data_read[3].ToString());
-
+                
                 // Close everything.
                 stream.Close();
                 client.Close();
+                
             }
             catch (ArgumentNullException e)
             {
@@ -136,6 +140,7 @@ namespace PCI1750TCPReflector_ConsoleTester
             {
                 Console.WriteLine("SocketException: {0}", e);
             }
+            return data_read;
 
         }
 

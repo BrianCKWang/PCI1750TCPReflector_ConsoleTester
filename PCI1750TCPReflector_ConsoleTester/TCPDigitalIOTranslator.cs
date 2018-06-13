@@ -11,7 +11,8 @@ namespace PCI1750TCPReflector_ConsoleTester
         private static Dictionary<byte, byte> Dic_TCPtoDIO_projectResponse = new Dictionary<byte, byte>();
         private static Dictionary<byte, byte> Dic_TCPtoDIO_robotResponse = new Dictionary<byte, byte>();
         private static Dictionary<byte, byte> Dic_DIOtoTCP_command = new Dictionary<byte, byte>();
-        private static Dictionary<byte, byte> Dic_projectNumber = new Dictionary<byte, byte>();
+        private static Dictionary<byte, byte> Dic_DIOtoTCP_projectNumber = new Dictionary<byte, byte>();
+        private static Dictionary<byte, byte> Dic_TCPtoDIO_projectNumber = new Dictionary<byte, byte>();
         private static Dictionary<byte, byte> Dic_RobotCommand = new Dictionary<byte, byte>();
         
         public TCPDigitalIOTranslator()
@@ -20,14 +21,14 @@ namespace PCI1750TCPReflector_ConsoleTester
         }
         public short getDOfromTCPResponse(byte[] response)
         {
-            byte commandSent = 0;
+            short commandSent = 0;
             byte responseCode = 0;
             byte PM_Command = 0;
-            
+            short fullMessage = 0;
 
             if (response.Length == 4)
             {
-                commandSent = response[1];
+                commandSent = (short)(response[1] | response[0] << 8);
                 Console.WriteLine("commandSent: {0}.", commandSent);
                 responseCode = response[3];
                 Console.WriteLine("responseCode: {0}.", responseCode);
@@ -36,7 +37,12 @@ namespace PCI1750TCPReflector_ConsoleTester
                     try
                     {
                         Dic_TCPtoDIO_projectResponse.TryGetValue(responseCode, out PM_Command);
-                        Console.WriteLine("ProjectCommand PM_Command: {0}.", PM_Command);
+                        Console.WriteLine("extractProjectNum(commandSent): {0}.", extractProjectNum(commandSent));
+                        Console.WriteLine("extractRobotNum(commandSent): {0}.", extractRobotNum(commandSent));
+                        Console.WriteLine("ProjectCommandSent PM_Command: {0}.", PM_Command);
+                        
+                        fullMessage = (short)(extractProjectNum(commandSent) | 1 << 3 | PM_Command << 5);
+
                     }
                     catch (KeyNotFoundException)
                     {
@@ -49,7 +55,8 @@ namespace PCI1750TCPReflector_ConsoleTester
                     try
                     {
                         Dic_TCPtoDIO_robotResponse.TryGetValue(responseCode, out PM_Command);
-                        Console.WriteLine("RobotCommand PM_Command: {0}.", PM_Command);
+                        Console.WriteLine("RobotCommandSent PM_Command: {0}.", PM_Command);
+                        fullMessage = (short)(1 | extractRobotNum(commandSent) << 3 | PM_Command << 5);
                     }
                     catch (KeyNotFoundException)
                     {
@@ -57,10 +64,10 @@ namespace PCI1750TCPReflector_ConsoleTester
                     }
                 }
             }
-            return PM_Command;
+            return fullMessage;
 
         }
-        private bool isProjectCommand(byte commandSent)
+        private bool isProjectCommand(short commandSent)
         {
             commandSent /= 10;
             commandSent %= 10;
@@ -72,6 +79,17 @@ namespace PCI1750TCPReflector_ConsoleTester
             { 
                return false;
             }
+        }
+        private byte extractProjectNum(short commandSent)
+        {
+            return (byte)(commandSent /= 100);
+        }
+        private byte extractRobotNum(short commandSent)
+        {
+            commandSent /= 10;
+            commandSent %= 10;
+            commandSent++;
+            return (byte)(commandSent);
         }
         public int getTCPCommand(byte projectNum, byte robotNum, byte command)
         {
@@ -109,7 +127,7 @@ namespace PCI1750TCPReflector_ConsoleTester
 
             try
             {
-                Dic_projectNumber.TryGetValue(projectNum, out PM_projectNum);
+                Dic_DIOtoTCP_projectNumber.TryGetValue(projectNum, out PM_projectNum);
             }
             catch (KeyNotFoundException)
             {
@@ -137,7 +155,7 @@ namespace PCI1750TCPReflector_ConsoleTester
             byte PM_command = 0;
             try
             {
-                Dic_projectNumber.TryGetValue(projectNum, out PM_projectNum);
+                Dic_DIOtoTCP_projectNumber.TryGetValue(projectNum, out PM_projectNum);
             }
             catch (KeyNotFoundException)
             {
@@ -188,8 +206,11 @@ namespace PCI1750TCPReflector_ConsoleTester
                 Dic_DIOtoTCP_command.Add(5, 15);
 
                 //Project number
-                Dic_projectNumber.Add(1, 6);    //HMI project 1 is project 6
-                Dic_projectNumber.Add(2, 2);    //HMI project 2 is project 2
+                Dic_DIOtoTCP_projectNumber.Add(1, 6);    //HMI project 1 is PM project 6
+                Dic_DIOtoTCP_projectNumber.Add(2, 2);    //HMI project 2 is PM project 2
+
+                Dic_TCPtoDIO_projectNumber.Add(6, 1);    //PM project 6 is HMI project 1 
+                Dic_TCPtoDIO_projectNumber.Add(2, 2);    //PM project 2 is HMI project 2 
 
                 //RobotCommand
                 Dic_RobotCommand.Add(6, 1); //Start
