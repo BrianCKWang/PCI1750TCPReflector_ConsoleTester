@@ -14,6 +14,8 @@ namespace PCI1750TCPReflector_ConsoleTester
         private byte _projectNum;
         private byte _robotNum;
         private byte _command;
+        private byte _execute;
+        private byte _statusAck;
         private static bool StaticIO_firstTime;
         public StaticDIO()
         {
@@ -25,23 +27,53 @@ namespace PCI1750TCPReflector_ConsoleTester
         public byte ProjectNum
         {
             get {
-                if (!StaticIO_firstTime) { StaticDI(); }
+                if (!StaticIO_firstTime) { RunStaticDI(); }
                 return _projectNum; }
         }
         public byte RobotNum
         {
             get {
-                if (!StaticIO_firstTime) { StaticDI(); }
+                if (!StaticIO_firstTime) { RunStaticDI(); }
                 return _robotNum; }
         }
         public byte Command
         {
             get {
-                if (!StaticIO_firstTime) { StaticDI(); }
+                if (!StaticIO_firstTime) { RunStaticDI(); }
                 return _command; }
         }
+        public byte Execute
+        {
+            get
+            {
+                if (!StaticIO_firstTime) { RunStaticDI(); }
+                return _execute;
+            }
+        }
+        public byte StatusAck
+        {
+            get
+            {
+                if (!StaticIO_firstTime) { RunStaticDI(); }
+                return _statusAck;
+            }
+        }
+        private void extractAndsetNum(short fullResponse)
+        {
+            short projectBitmask   = 0b0000000000000111;
+            short robotBitmask     = 0b0000000000011000;
+            short commandBitmask   = 0b0000000111100111;
+            short executeBitmask   = 0b0000001000000000;
+            short statusAckBitmask = 0b0000010000000000;
 
-        public static void StaticDI()
+            _projectNum = (byte)(fullResponse & projectBitmask);
+            _robotNum = (byte)((fullResponse & robotBitmask) >> 3); 
+            _command = (byte)((fullResponse & commandBitmask) >> 5);
+            _execute = (byte)((fullResponse & executeBitmask) >> 9);
+            _statusAck = (byte)((fullResponse & statusAckBitmask) >> 10);
+        }
+        
+        public void RunStaticDI()
         {
             //-----------------------------------------------------------------------------------
             // Configure the following parameters before running the demo
@@ -51,6 +83,7 @@ namespace PCI1750TCPReflector_ConsoleTester
             string profilePath = "../../profile/PCI-1750.xml";
             int startPort = 0;
             int portCount = 2;
+            short fullResponse = 0;
             StaticIO_firstTime = true;
             ErrorCode errorCode = ErrorCode.Success;
 
@@ -84,6 +117,8 @@ namespace PCI1750TCPReflector_ConsoleTester
                 for (int i = 0; i < portCount; ++i)
                 {
                     Console.WriteLine(" DI port {0} status : 0x{1:x}\n", startPort + i, buffer[i]);
+                    
+
                     /************************************************************************/
                     //Console.WriteLine(" DI port {0} status : 0x{1:x}\n", startPort + i, data);
                     //NOTE:
@@ -92,6 +127,9 @@ namespace PCI1750TCPReflector_ConsoleTester
                     //argument3:data is used to save the result.                                                                     
                     /************************************************************************/
                 }
+                fullResponse = (short)(buffer[0] | buffer[1] << 8);
+                extractAndsetNum(fullResponse);
+
                 Thread.Sleep(100);
 
             }
@@ -110,7 +148,7 @@ namespace PCI1750TCPReflector_ConsoleTester
             }
         }
 
-        public static void StaticDO()
+        public void StaticDO()
         {
             //-----------------------------------------------------------------------------------
             // Configure the following parameters before running the demo

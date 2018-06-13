@@ -19,7 +19,7 @@ namespace PCI1750TCPReflector_ConsoleTester
             string message = "";
 
             TCPDigitalIOTranslator translator = new TCPDigitalIOTranslator();
-
+            StaticDIO staticDIO = new StaticDIO();
             while (true)
             {
                 Console.Write("Value to send: ");
@@ -34,6 +34,10 @@ namespace PCI1750TCPReflector_ConsoleTester
                 
                 Console.WriteLine("Project TCP command: {0}.", translator.test_getProjectTCPCommand(1, 1));
                 Console.WriteLine("Robot TCP command: {0}.", translator.test_getRobotTCPCommand(1, 2, 9));
+
+                staticDIO.RunStaticDI();
+                Console.WriteLine("ProjectNum: {0}, RobotNum: {1}, Command: {2}.", staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command);
+                Console.WriteLine("Execute: {0}, StatusAck: {1}.", staticDIO.Execute, staticDIO.StatusAck);
                 //StaticDIO.StaticDI();
                 //StaticDIO.StaticDO();
 
