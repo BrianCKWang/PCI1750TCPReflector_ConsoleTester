@@ -18,10 +18,12 @@ namespace PCI1750TCPReflector_ConsoleTester
             int message_int = 0;
             string message = "";
             bool manualinput = true;
-            TcpClient client = new TcpClient(IP, port);
+
+            
 
             TCPDigitalIOTranslator translator = new TCPDigitalIOTranslator();
             StaticDIO staticDIO = new StaticDIO();
+
             while (true)
             {
                 //staticDIO.RunStaticDI();
@@ -38,6 +40,7 @@ namespace PCI1750TCPReflector_ConsoleTester
 
                 if (manualinput)
                 {
+                    Console.WriteLine("");
                     Console.Write("Value to send: ");
                     message_int = Convert.ToInt32(Console.ReadLine());
                 }
@@ -57,7 +60,7 @@ namespace PCI1750TCPReflector_ConsoleTester
 
                         Console.WriteLine("Will sent: {0}", message);
 
-                        responsebyte = ConnectAndSend(client, message, message_int);
+                        responsebyte = ConnectAndSend(IP, port, message, message_int);
                         Console.WriteLine("TCP Status: {0}.", translator.getDOfromTCPResponse(responsebyte));
                     }
                     
@@ -96,19 +99,18 @@ namespace PCI1750TCPReflector_ConsoleTester
                 hex = "0" + hex;
             }
         }
-        static byte[] ConnectAndSend(TcpClient client, String message, int message_int)
+        static byte[] ConnectAndSend(string IP, Int32 port, String message, int message_int)
         {
             // Buffer to store the response bytes.
             Byte[] data_read = new Byte[4];
             try
             {
-                
+                TcpClient client = new TcpClient(IP, port);
+                NetworkStream stream = client.GetStream();
 
                 Byte[] data = { 0, 0 };
                 Byte[] data_message = StringToByteArray(message);
                 cleanUpDataForSending(ref data_message, ref data);
-                
-                NetworkStream stream = client.GetStream();
 
                 stream.Write(data, 0, data.Length);
 
@@ -124,8 +126,8 @@ namespace PCI1750TCPReflector_ConsoleTester
                 Console.WriteLine("project: {0}, {1}, {2}, {3}", data_read[0].ToString(), data_read[1].ToString(), data_read[2].ToString(), data_read[3].ToString());
                 
                 // Close everything.
-                //stream.Close();
-                //client.Close();
+                stream.Close();
+                client.Close();
                 
             }
             catch (ArgumentNullException e)
