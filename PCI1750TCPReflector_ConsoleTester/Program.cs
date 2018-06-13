@@ -34,7 +34,7 @@ namespace PCI1750TCPReflector_ConsoleTester
 
                 //Console.WriteLine("Project TCP command: {0}.", translator.test_getProjectTCPCommand(staticDIO.ProjectNum, staticDIO.Command));
                 //Console.WriteLine("Robot TCP command: {0}.", translator.test_getRobotTCPCommand(staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command));
-                byte[] testResponse = { 2, 103, 0, 7};
+                //byte[] testResponse = { 2, 103, 0, 7};
                 byte[] responsebyte = { 0, 0, 0, 0 };
                 //Console.WriteLine("Test Status: {0}.", translator.getDOfromTCPResponse(testResponse));
 
