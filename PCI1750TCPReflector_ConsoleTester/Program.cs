@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
-
+using System.Threading;
 
 
 namespace PCI1750TCPReflector_ConsoleTester
@@ -22,28 +22,67 @@ namespace PCI1750TCPReflector_ConsoleTester
             StaticDIO staticDIO = new StaticDIO();
             while (true)
             {
-                Console.Write("Value to send: ");
-                message_int = Convert.ToInt32(Console.ReadLine());
-                message = message_int.ToString("X");
-                completeHexMessage(ref message);
-
-                Console.WriteLine("Will sent: {0}", message);
-
-                ConnectAndSend(IP, port, message, message_int);
-
                 
-                Console.WriteLine("Project TCP command: {0}.", translator.test_getProjectTCPCommand(1, 1));
-                Console.WriteLine("Robot TCP command: {0}.", translator.test_getRobotTCPCommand(1, 2, 9));
 
                 staticDIO.RunStaticDI();
-                Console.WriteLine("ProjectNum: {0}, RobotNum: {1}, Command: {2}.", staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command);
-                Console.WriteLine("Execute: {0}, StatusAck: {1}.", staticDIO.Execute, staticDIO.StatusAck);
-                //StaticDIO.StaticDI();
-                //StaticDIO.StaticDO();
+                //Console.WriteLine("ProjectNum: {0}, RobotNum: {1}, Command: {2}.", staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command);
+                //Console.WriteLine("Execute: {0}, StatusAck: {1}.", staticDIO.Execute, staticDIO.StatusAck);
+
+                //Console.WriteLine("Project TCP command: {0}.", translator.test_getProjectTCPCommand(staticDIO.ProjectNum, staticDIO.Command));
+                //Console.WriteLine("Robot TCP command: {0}.", translator.test_getRobotTCPCommand(staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command));
+
+                Console.WriteLine("TCP command: {0}.", translator.getTCPCommand(staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command));
+
+                Console.Write("Value to send: ");
+                //message_int = Convert.ToInt32(Console.ReadLine());
+                message_int = translator.getTCPCommand(staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command);
+                if (checkMessageValidity(message_int))
+                {
+                    Console.WriteLine("Message is valid.");
+                    if(staticDIO.Execute == 1)
+                    {
+                        message = message_int.ToString("X");
+                        completeHexMessage(ref message);
+
+                        Console.WriteLine("Will sent: {0}", message);
+
+                        ConnectAndSend(IP, port, message, message_int);
+                    }
+                    
+                }
+                else
+                {
+                    Console.WriteLine("Message is invalid.");
+                }
+
+                
+                Thread.Sleep(100);
+                //message_int = translator.getTCPCommand(staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command);
+
+
+
+
+
 
             }
         }
+        static bool checkMessageValidity(int message)
+        {
+            bool isGood = true;
 
+
+            for(int i = 0; i < 3; ++i)
+            {
+                if (message % 10 == 0)
+                {
+                    isGood = false;
+                }
+                message /= 10;
+            }
+
+            
+            return isGood;
+        }
         static void completeHexMessage(ref String hex)
         {
             if (hex.Length % 2 != 0)
