@@ -181,18 +181,10 @@ namespace PCI1750TCPReflector_ConsoleTester
                 //byte dataForWriteBit = 0;//data is used to the 'WriteBit'.
                 //int bit = 1;//the bit is used to the 'WriteBit'.
 
-                for (int i = 0; i < portCount; ++i)
-                {
-                    Console.WriteLine("Input a hexadecimal number for DO port {0} to output(for example, 0x11): ", startPort + i);
-                    string data = Console.ReadLine();
-                    bufferForWriting[i] = byte.Parse(data.Contains("0x") ? data.Remove(0, 2) : data, System.Globalization.NumberStyles.HexNumber);
-                    /*
-                     //for WriteBit
-                     Console.WriteLine(" Input a hexadecimal number for DO port {0} to output(for example, 0x1 or 0x00): ", startPort + i);
-                     string data = Console.ReadLine();
-                     dataForWriteBit = byte.Parse(data.Contains("0x") ? data.Remove(0, 2) : data, System.Globalization.NumberStyles.HexNumber);
-                    */
-                }
+                bufferForWriting = BitConverter.GetBytes(output);
+                Console.WriteLine("output: {0:X}.", output);
+                Console.WriteLine("bufferForWriting[0]: {0:X}. bufferForWriting[1]: {1:X}.", bufferForWriting[0], bufferForWriting[1]);
+
                 errorCode = instantDoCtrl.Write(startPort, portCount, bufferForWriting);
                 /************************************************************************/
                 //errorCode = instantDoCtrl.WriteBit(startPort, bit, dataForWriteBit); 

@@ -16,7 +16,8 @@ namespace PCI1750TCPReflector_ConsoleTester
             String IP = "127.0.0.1";
             Int32 port = 1700;
             int message_int = 0;
-            string message = "";
+            string message = message_int.ToString("X");
+            byte[] responsebyte = { 0, 0, 0, 0 };
             bool manualInput = false;
             bool showVerboseMessage = false;
 
@@ -37,7 +38,7 @@ namespace PCI1750TCPReflector_ConsoleTester
                 //byte[] testResponse = { 2, 103, 0, 7};
                 //Console.WriteLine("Test Status: {0}.", translator.getDOfromTCPResponse(testResponse));
 
-                byte[] responsebyte = { 0, 0, 0, 0 };
+                
                 
                 if (manualInput)
                 {
@@ -59,7 +60,6 @@ namespace PCI1750TCPReflector_ConsoleTester
                     {
                         message = message_int.ToString("X");
                         completeHexMessage(ref message);
-
                         Console.WriteLine("Will sent: {0}", message);
 
                         responsebyte = ConnectAndSend(IP, port, message, message_int);
@@ -111,6 +111,8 @@ namespace PCI1750TCPReflector_ConsoleTester
             {
                 TcpClient client = new TcpClient(IP, port);
                 NetworkStream stream = client.GetStream();
+                stream.ReadTimeout = 2000;
+                stream.WriteTimeout = 2000;
 
                 Byte[] data = { 0, 0 };
                 Byte[] data_message = StringToByteArray(message);
@@ -125,6 +127,7 @@ namespace PCI1750TCPReflector_ConsoleTester
                 // Receive the TcpServer.response.
 
                 // Read the first batch of the TcpServer response bytes.
+                Console.WriteLine("stream.ReadTimeout: {0}", stream.ReadTimeout);
                 Int32 bytes = stream.Read(data_read, 0, data_read.Length);
 
                 Console.WriteLine("project: {0}, {1}, {2}, {3}", data_read[0].ToString(), data_read[1].ToString(), data_read[2].ToString(), data_read[3].ToString());
@@ -145,7 +148,7 @@ namespace PCI1750TCPReflector_ConsoleTester
             return data_read;
 
         }
-
+        
         static void cleanUpDataForSending(ref Byte[] data_in, ref Byte[] data_out)
         {
             if(data_in.Length == 1)
