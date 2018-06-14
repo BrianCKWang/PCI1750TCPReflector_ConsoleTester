@@ -13,7 +13,7 @@ namespace PCI1750TCPReflector_ConsoleTester
     {
         static void Main(string[] args)
         {
-            String IP = "10.89.0.127";
+            String IP = "127.0.0.1";
             Int32 port = 1700;
             int message_int = 0;
             string message = "";

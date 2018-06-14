@@ -14,7 +14,7 @@ namespace PCI1750TCPReflector_ConsoleTester
         private static Dictionary<byte, byte> Dic_DIOtoTCP_projectNumber = new Dictionary<byte, byte>();
         private static Dictionary<byte, byte> Dic_TCPtoDIO_projectNumber = new Dictionary<byte, byte>();
         private static Dictionary<byte, byte> Dic_RobotCommand = new Dictionary<byte, byte>();
-        
+         public enum command { }
         public TCPDigitalIOTranslator()
         {
             populateDictionary();
