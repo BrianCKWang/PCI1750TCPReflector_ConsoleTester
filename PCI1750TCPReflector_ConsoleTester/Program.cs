@@ -23,22 +23,8 @@ namespace PCI1750TCPReflector_ConsoleTester
             TCPDigitalIOTranslator translator = new TCPDigitalIOTranslator(showVerboseMessage);
             StaticDIO staticDIO = new StaticDIO(showVerboseMessage);
             
-            
-
             while (true)
             {
-                //staticDIO.RunStaticDI();
-                //staticDIO.RunStaticDO();
-
-                //Console.WriteLine("ProjectNum: {0}, RobotNum: {1}, Command: {2}.", staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command);
-                //Console.WriteLine("Execute: {0}, StatusAck: {1}.", staticDIO.Execute, staticDIO.StatusAck);
-
-                //Console.WriteLine("Project TCP command: {0}.", translator.test_getProjectTCPCommand(staticDIO.ProjectNum, staticDIO.Command));
-                //Console.WriteLine("Robot TCP command: {0}.", translator.test_getRobotTCPCommand(staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command));
-
-                //byte[] testResponse = { 2, 103, 0, 7};
-                //Console.WriteLine("Test Status: {0}.", translator.getDOfromTCPResponse(testResponse));
-
                 if (manualInput)
                 {
                     Console.WriteLine("");
@@ -59,7 +45,6 @@ namespace PCI1750TCPReflector_ConsoleTester
                     {
                         SendTCPAndUpdateDO(IP, port, message_int, showVerboseMessage);
                     }
-                    
                 }
                 else
                 {
@@ -69,7 +54,6 @@ namespace PCI1750TCPReflector_ConsoleTester
                 UpdateAllStatus(IP, port, showVerboseMessage);
                 Thread.Sleep(200);
                 Console.WriteLine("");
-
             }
         }
         static bool CheckMessageValidity(int message)
