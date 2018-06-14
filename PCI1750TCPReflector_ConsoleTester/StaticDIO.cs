@@ -184,8 +184,10 @@ namespace PCI1750TCPReflector_ConsoleTester
                 bufferForWriting = BitConverter.GetBytes(output);
                 Console.WriteLine("output: {0:X}.", output);
                 Console.WriteLine("bufferForWriting[0]: {0:X}. bufferForWriting[1]: {1:X}.", bufferForWriting[0], bufferForWriting[1]);
-
-                errorCode = instantDoCtrl.Write(startPort, portCount, bufferForWriting);
+                if(output != 0)
+                {
+                    errorCode = instantDoCtrl.Write(startPort, portCount, bufferForWriting);
+                }
                 /************************************************************************/
                 //errorCode = instantDoCtrl.WriteBit(startPort, bit, dataForWriteBit); 
                 //NOTE:
