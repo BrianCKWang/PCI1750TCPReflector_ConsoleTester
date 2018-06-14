@@ -8,6 +8,7 @@ namespace PCI1750TCPReflector_ConsoleTester
 {
     class TCPDigitalIOTranslator
     {
+        private bool _showVerboseMessage;
         private static Dictionary<byte, byte> Dic_TCPtoDIO_projectResponse = new Dictionary<byte, byte>();
         private static Dictionary<byte, byte> Dic_TCPtoDIO_robotResponse = new Dictionary<byte, byte>();
         private static Dictionary<byte, byte> Dic_DIOtoTCP_command = new Dictionary<byte, byte>();
@@ -47,8 +48,9 @@ namespace PCI1750TCPReflector_ConsoleTester
             Robot_ManualMode = 23
         }
 
-        public TCPDigitalIOTranslator()
+        public TCPDigitalIOTranslator(bool showVerboseMessaeg)
         {
+            _showVerboseMessage = showVerboseMessaeg;
             populateDictionary();
         }
         public short getDOfromTCPResponse(byte[] response)
@@ -157,6 +159,12 @@ namespace PCI1750TCPReflector_ConsoleTester
             try
             {
                 Dic_DIOtoTCP_projectNumber.TryGetValue(projectNum, out PM_projectNum);
+                if (_showVerboseMessage)
+                {
+                    Console.WriteLine("projectNum: {0}", projectNum);
+                    Console.WriteLine("PM_projectNum: {0}", PM_projectNum);
+                }
+                    
             }
             catch (KeyNotFoundException)
             {
@@ -165,6 +173,12 @@ namespace PCI1750TCPReflector_ConsoleTester
             try
             {
                 Dic_DIOtoTCP_command.TryGetValue(command, out PM_command);
+                if (_showVerboseMessage)
+                {
+                    Console.WriteLine("command: {0}", command);
+                    Console.WriteLine("PM_command: {0}", PM_command);
+                }
+                    
             }
             catch (KeyNotFoundException)
             {
@@ -185,6 +199,10 @@ namespace PCI1750TCPReflector_ConsoleTester
             try
             {
                 Dic_DIOtoTCP_projectNumber.TryGetValue(projectNum, out PM_projectNum);
+
+                if (_showVerboseMessage)
+                    Console.WriteLine("PM_projectNum: {0}", PM_projectNum);
+
             }
             catch (KeyNotFoundException)
             {
@@ -193,6 +211,9 @@ namespace PCI1750TCPReflector_ConsoleTester
             try
             {
                 Dic_RobotCommand.TryGetValue(command, out PM_command);
+
+                if (_showVerboseMessage)
+                    Console.WriteLine("PM_command: {0}", PM_command);
             }
             catch (KeyNotFoundException)
             {

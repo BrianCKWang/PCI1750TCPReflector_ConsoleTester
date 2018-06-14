@@ -17,11 +17,11 @@ namespace PCI1750TCPReflector_ConsoleTester
             Int32 port = 1700;
             int message_int = 0;
             string message = "";
-            bool manualinput = true;
+            bool manualInput = false;
+            bool showVerboseMessage = false;
 
-            TCPDigitalIOTranslator translator = new TCPDigitalIOTranslator();
-            
-            StaticDIO staticDIO = new StaticDIO();
+            TCPDigitalIOTranslator translator = new TCPDigitalIOTranslator(showVerboseMessage);
+            StaticDIO staticDIO = new StaticDIO(showVerboseMessage);
 
             while (true)
             {
@@ -33,11 +33,13 @@ namespace PCI1750TCPReflector_ConsoleTester
 
                 //Console.WriteLine("Project TCP command: {0}.", translator.test_getProjectTCPCommand(staticDIO.ProjectNum, staticDIO.Command));
                 //Console.WriteLine("Robot TCP command: {0}.", translator.test_getRobotTCPCommand(staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command));
+
                 //byte[] testResponse = { 2, 103, 0, 7};
-                byte[] responsebyte = { 0, 0, 0, 0 };
                 //Console.WriteLine("Test Status: {0}.", translator.getDOfromTCPResponse(testResponse));
 
-                if (manualinput)
+                byte[] responsebyte = { 0, 0, 0, 0 };
+                
+                if (manualInput)
                 {
                     Console.WriteLine("");
                     Console.Write("Value to send: ");
@@ -45,14 +47,15 @@ namespace PCI1750TCPReflector_ConsoleTester
                 }
                 else
                 {
-                    Console.WriteLine("TCP command: {0}.", translator.getTCPCommand(staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command));
+                    staticDIO.UpdateStaticDI();
+                    Console.WriteLine("TCP command: {0}. ProjectNum: {1}. RobotNum: {2}. Command: {3}", translator.getTCPCommand(staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command), staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command);
                     message_int = translator.getTCPCommand(staticDIO.ProjectNum, staticDIO.RobotNum, staticDIO.Command);
                 }
                 
                 if (checkMessageValidity(message_int))
                 {
                     Console.WriteLine("Message is valid.");
-                    if(staticDIO.Execute == 1 || manualinput)
+                    if(staticDIO.Execute == 1 || manualInput)
                     {
                         message = message_int.ToString("X");
                         completeHexMessage(ref message);
@@ -60,7 +63,9 @@ namespace PCI1750TCPReflector_ConsoleTester
                         Console.WriteLine("Will sent: {0}", message);
 
                         responsebyte = ConnectAndSend(IP, port, message, message_int);
-                        Console.WriteLine("TCP Status: {0}.", translator.getDOfromTCPResponse(responsebyte));
+                        Console.WriteLine("TCP Status: {0:X}.", translator.getDOfromTCPResponse(responsebyte));
+
+                        staticDIO.UpdateStaticDO(translator.getDOfromTCPResponse(responsebyte));
                     }
                     
                 }
