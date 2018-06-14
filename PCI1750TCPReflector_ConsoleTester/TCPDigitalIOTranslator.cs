@@ -14,7 +14,39 @@ namespace PCI1750TCPReflector_ConsoleTester
         private static Dictionary<byte, byte> Dic_DIOtoTCP_projectNumber = new Dictionary<byte, byte>();
         private static Dictionary<byte, byte> Dic_TCPtoDIO_projectNumber = new Dictionary<byte, byte>();
         private static Dictionary<byte, byte> Dic_RobotCommand = new Dictionary<byte, byte>();
-         public enum command { }
+        public enum DIOCommand {
+            Empty = 0,
+            Project_Open = 1,
+            Project_Close = 2,
+            Project_Start = 3,
+            Project_Stop = 4,
+            Project_GetStatus = 5,
+            Robot_Start = 6,
+            Robot_Pause = 7,
+            Robot_Stop = 8,
+            Robot_GetStatus = 9,
+            Robot_ResetEmergencyStop = 10
+        }
+        public enum DIOResponse
+        {
+            Empty = 0,
+            Project_Open = 1,
+            Project_Closed = 2,
+            Project_Running = 3,
+            Project_Stopped = 4,
+            Project_Modified = 5,
+            Project_ConfigurationError = 6,
+            Project_InvalidLicense = 7,
+            Project_Error = 8,
+            Robot_Running = 17,
+            Robot_Paused = 18,
+            Robot_Stopped = 19,
+            Robot_Shutdown = 20,
+            Robot_EmergencyStop = 21,
+            Robot_Error = 22,
+            Robot_ManualMode = 23
+        }
+
         public TCPDigitalIOTranslator()
         {
             populateDictionary();
@@ -95,21 +127,18 @@ namespace PCI1750TCPReflector_ConsoleTester
         {
             switch (command)
             {
-                //Project Command
-                case 1: //Open
-                case 2: //Close
-                case 3: //Start
-                case 4: //Stop
-                case 5: //Get Status
+                case (byte)DIOCommand.Project_Open:
+                case (byte)DIOCommand.Project_Close:
+                case (byte)DIOCommand.Project_Start:
+                case (byte)DIOCommand.Project_Stop:
+                case (byte)DIOCommand.Project_GetStatus:
                     return getProjectTCPCommand(projectNum, command);
-                //Robot Command
-                case 6: //Start
-                case 7: //Pause
-                case 8: //Stop
-                case 9: //Get Status
-                case 10: //Reset Emergency Stop
+                case (byte)DIOCommand.Robot_Start:
+                case (byte)DIOCommand.Robot_Pause:
+                case (byte)DIOCommand.Robot_Stop:
+                case (byte)DIOCommand.Robot_GetStatus:
+                case (byte)DIOCommand.Robot_ResetEmergencyStop:
                     return getRobotTCPCommand(projectNum, robotNum, command);
-
             }
             return 0;
         }

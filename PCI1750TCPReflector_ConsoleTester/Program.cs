@@ -19,9 +19,8 @@ namespace PCI1750TCPReflector_ConsoleTester
             string message = "";
             bool manualinput = true;
 
-            
-
             TCPDigitalIOTranslator translator = new TCPDigitalIOTranslator();
+            
             StaticDIO staticDIO = new StaticDIO();
 
             while (true)
