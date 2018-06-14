@@ -47,7 +47,13 @@ namespace PCI1750TCPReflector_ConsoleTester
             Robot_Error = 22,
             Robot_ManualMode = 23
         }
-
+        public enum RobotNum
+        {
+            R1 = 0,
+            R2 = 1,
+            R3 = 2,
+            R4 = 3
+        }
         public TCPDigitalIOTranslator(bool showVerboseMessaeg)
         {
             _showVerboseMessage = showVerboseMessaeg;
@@ -60,7 +66,7 @@ namespace PCI1750TCPReflector_ConsoleTester
             byte PM_Command = 0;
             short fullMessage = 0;
 
-            if (response.Length == 4)
+            if (response.Length >= 4)
             {
                 commandSent = (short)(response[1] | response[0] << 8);
                 Console.WriteLine("commandSent: {0}.", commandSent);
@@ -196,6 +202,7 @@ namespace PCI1750TCPReflector_ConsoleTester
             byte PM_projectNum = 0;
             byte PM_robotNum = getRobotDigit(robotNum);
             byte PM_command = 0;
+            Console.WriteLine("======================= PM_robotNum: {0}", PM_robotNum);
             try
             {
                 Dic_DIOtoTCP_projectNumber.TryGetValue(projectNum, out PM_projectNum);
@@ -223,7 +230,10 @@ namespace PCI1750TCPReflector_ConsoleTester
         }
         private byte getRobotDigit(byte robotNum)
         {
-            return ++robotNum;
+            
+            int robotCode = robotNum;
+            robotCode += 2;
+            return (byte)robotCode;
         }
         public static void populateDictionary()
         {

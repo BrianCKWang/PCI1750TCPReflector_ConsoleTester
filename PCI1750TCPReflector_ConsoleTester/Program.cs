@@ -22,7 +22,7 @@ namespace PCI1750TCPReflector_ConsoleTester
 
             TCPDigitalIOTranslator translator = new TCPDigitalIOTranslator(showVerboseMessage);
             StaticDIO staticDIO = new StaticDIO(showVerboseMessage);
-            TcpClient client = new TcpClient(IP, port);
+            
             
 
             while (true)
@@ -57,7 +57,7 @@ namespace PCI1750TCPReflector_ConsoleTester
                     Console.WriteLine("Message is valid.");
                     if(staticDIO.Execute == 1 || manualInput)
                     {
-                        SendTCPAndUpdateDO(IP, port, message_int, showVerboseMessage, ref client);
+                        SendTCPAndUpdateDO(IP, port, message_int, showVerboseMessage);
                     }
                     
                 }
@@ -66,8 +66,9 @@ namespace PCI1750TCPReflector_ConsoleTester
                     Console.WriteLine("Message is invalid.");
                 }
 
-                UpdateAllStatus(IP, port, showVerboseMessage, ref client);
-                Thread.Sleep(100);
+                UpdateAllStatus(IP, port, showVerboseMessage);
+                Thread.Sleep(200);
+                Console.WriteLine("");
 
             }
         }
@@ -95,8 +96,9 @@ namespace PCI1750TCPReflector_ConsoleTester
                 hex = "0" + hex;
             }
         }
-        static byte[] ConnectAndSend(string IP, Int32 port, int message_int, ref TcpClient client)
+        static byte[] ConnectAndSend( string IP, int port, int message_int)
         {
+            TcpClient client = new TcpClient(IP, port);
             // Buffer to store the response bytes.
             Byte[] data_read = new Byte[4];
             string message = message_int.ToString("X");
@@ -123,14 +125,14 @@ namespace PCI1750TCPReflector_ConsoleTester
                 // Receive the TcpServer.response.
 
                 // Read the first batch of the TcpServer response bytes.
-                Console.WriteLine("stream.ReadTimeout: {0}", stream.ReadTimeout);
+                //Console.WriteLine("stream.ReadTimeout: {0}", stream.ReadTimeout);
                 Int32 bytes = stream.Read(data_read, 0, data_read.Length);
 
                 Console.WriteLine("project: {0}, {1}, {2}, {3}", data_read[0].ToString(), data_read[1].ToString(), data_read[2].ToString(), data_read[3].ToString());
                 
                 // Close everything.
-                //stream.Close();
-                //client.Close();
+                stream.Close();
+                client.Close();
                 
             }
             catch (ArgumentNullException e)
@@ -144,32 +146,46 @@ namespace PCI1750TCPReflector_ConsoleTester
             return data_read;
 
         }
-        static void UpdateAllStatus(string IP, Int32 port, bool showVerboseMessage, ref TcpClient client)
+        static void UpdateAllStatus(string IP, int port, bool showVerboseMessage)
         {
-            SendTCPAndUpdateDO(IP, port, 215, showVerboseMessage, ref client);
-            SendTCPAndUpdateDO(IP, port, 224, showVerboseMessage, ref client);
-            SendTCPAndUpdateDO(IP, port, 234, showVerboseMessage, ref client);
-            SendTCPAndUpdateDO(IP, port, 244, showVerboseMessage, ref client);
-            SendTCPAndUpdateDO(IP, port, 254, showVerboseMessage, ref client);
+            TCPDigitalIOTranslator translator = new TCPDigitalIOTranslator(showVerboseMessage);
+            StaticDIO staticDIO = new StaticDIO(showVerboseMessage);
+            int command = 0;
+            Console.WriteLine("*** Update All Status ***");
+            staticDIO.UpdateStaticDI();
+            command = translator.getTCPCommand(staticDIO.ProjectNum, staticDIO.RobotNum, (byte)TCPDigitalIOTranslator.DIOCommand.Project_GetStatus);
+            Console.WriteLine("*** command: {0}", command);
+            SendTCPAndUpdateDO(IP, port, command, showVerboseMessage);
 
-            SendTCPAndUpdateDO(IP, port, 615, showVerboseMessage, ref client);
-            SendTCPAndUpdateDO(IP, port, 624, showVerboseMessage, ref client);
-            SendTCPAndUpdateDO(IP, port, 634, showVerboseMessage, ref client);
-            SendTCPAndUpdateDO(IP, port, 644, showVerboseMessage, ref client);
-            SendTCPAndUpdateDO(IP, port, 654, showVerboseMessage, ref client);
+            command = translator.getTCPCommand(staticDIO.ProjectNum, (byte)TCPDigitalIOTranslator.RobotNum.R1, (byte)TCPDigitalIOTranslator.DIOCommand.Robot_GetStatus);
+            Console.WriteLine("*** command: {0}", command);
+            SendTCPAndUpdateDO(IP, port, command, showVerboseMessage);
+
+            command = translator.getTCPCommand(staticDIO.ProjectNum, (byte)TCPDigitalIOTranslator.RobotNum.R2, (byte)TCPDigitalIOTranslator.DIOCommand.Robot_GetStatus);
+            Console.WriteLine("*** command: {0}", command);
+            SendTCPAndUpdateDO(IP, port, command, showVerboseMessage);
+
+            command = translator.getTCPCommand(staticDIO.ProjectNum, (byte)TCPDigitalIOTranslator.RobotNum.R3, (byte)TCPDigitalIOTranslator.DIOCommand.Robot_GetStatus);
+            Console.WriteLine("*** command: {0}", command);
+            SendTCPAndUpdateDO(IP, port, command, showVerboseMessage);
+
+            command = translator.getTCPCommand(staticDIO.ProjectNum, (byte)TCPDigitalIOTranslator.RobotNum.R4, (byte)TCPDigitalIOTranslator.DIOCommand.Robot_GetStatus);
+            Console.WriteLine("*** command: {0}", command);
+            SendTCPAndUpdateDO(IP, port, command, showVerboseMessage);
 
         }
-        static void SendTCPAndUpdateDO(string IP, Int32 port, int message_int, bool showVerboseMessage, ref TcpClient client)
+        static void SendTCPAndUpdateDO(string IP, int port, int message_int, bool showVerboseMessage)
         {
             TCPDigitalIOTranslator translator = new TCPDigitalIOTranslator(showVerboseMessage);
             StaticDIO staticDIO = new StaticDIO(showVerboseMessage);
             byte[] responsebyte = { 0, 0, 0, 0 };
 
-            responsebyte = ConnectAndSend(IP, port, message_int, ref client);
-            Console.WriteLine("TCP Status: {0:X}.", translator.getDOfromTCPResponse(responsebyte));
+            responsebyte = ConnectAndSend(IP, port, message_int);
+            Console.WriteLine("TCP Response: {0:X}.", translator.getDOfromTCPResponse(responsebyte));
 
             staticDIO.UpdateStaticDO(translator.getDOfromTCPResponse(responsebyte));
         }
+       
         static void CleanUpDataForSending(ref Byte[] data_in, ref Byte[] data_out)
         {
             if(data_in.Length == 1)
