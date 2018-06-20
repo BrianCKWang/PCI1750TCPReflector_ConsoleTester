@@ -22,7 +22,9 @@ namespace PCI1750TCPReflector_ConsoleTester
 
             TCPDigitalIOTranslator translator = new TCPDigitalIOTranslator(showVerboseMessage);
             StaticDIO staticDIO = new StaticDIO(showVerboseMessage);
-            
+
+            AsynchronousClient.StartClient();
+            Thread.Sleep(20000);
             while (true)
             {
                 if (manualInput)
@@ -56,7 +58,7 @@ namespace PCI1750TCPReflector_ConsoleTester
                 Console.WriteLine("");
             }
         }
-        static bool CheckMessageValidity(int message)
+        public static bool CheckMessageValidity(int message)
         {
             bool isGood = true;
 
@@ -73,7 +75,7 @@ namespace PCI1750TCPReflector_ConsoleTester
             
             return isGood;
         }
-        static void CompleteHexMessage(ref String hex)
+        public static void CompleteHexMessage(ref String hex)
         {
             if (hex.Length % 2 != 0)
             {
@@ -86,7 +88,7 @@ namespace PCI1750TCPReflector_ConsoleTester
             // Buffer to store the response bytes.
             Byte[] data_read = new Byte[4];
             string message = message_int.ToString("X");
-            message = message_int.ToString("X");
+            //message = message_int.ToString("X");
             CompleteHexMessage(ref message);
             Console.WriteLine("Will sent: {0}", message);
             try
@@ -170,7 +172,7 @@ namespace PCI1750TCPReflector_ConsoleTester
             staticDIO.UpdateStaticDO(translator.getDOfromTCPResponse(responsebyte));
         }
        
-        static void CleanUpDataForSending(ref Byte[] data_in, ref Byte[] data_out)
+        public static void CleanUpDataForSending(ref Byte[] data_in, ref Byte[] data_out)
         {
             if(data_in.Length == 1)
             {
@@ -183,7 +185,7 @@ namespace PCI1750TCPReflector_ConsoleTester
                 data_out[1] = data_in[1];
             }
         }
-        static byte[] StringToByteArray(string hex)
+        public static byte[] StringToByteArray(string hex)
         {
             return Enumerable.Range(0, hex.Length)
                              .Where(x => x % 2 == 0)
