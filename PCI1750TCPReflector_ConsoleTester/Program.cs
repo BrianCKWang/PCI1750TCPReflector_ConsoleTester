@@ -14,7 +14,7 @@ namespace PCI1750TCPReflector_ConsoleTester
         static void Main(string[] args)
         {
             String IP = "127.0.0.1";
-            Int32 port = 1700;
+            Int32 port = 2500;
             int message_int = 0;
             
             bool manualInput = false;
@@ -23,8 +23,16 @@ namespace PCI1750TCPReflector_ConsoleTester
             TCPDigitalIOTranslator translator = new TCPDigitalIOTranslator(showVerboseMessage);
             StaticDIO staticDIO = new StaticDIO(showVerboseMessage);
 
-            AsynchronousClient.StartClient();
-            Thread.Sleep(20000);
+            //byte[] message_test = {}
+            
+            Console.WriteLine("{0}", translator.getTCPCommand(2, 0, 1));
+            byte[] response_test = { 0, 202, 0, 6 };
+            string yourByteString = Convert.ToString(translator.getDOfromTCPResponse(response_test), 2).PadLeft(16, '0');
+
+            Console.WriteLine("{0:X}", translator.getDOfromTCPResponse(response_test));
+            Console.WriteLine(yourByteString);
+            Thread.Sleep(2000000);
+
             while (true)
             {
                 if (manualInput)

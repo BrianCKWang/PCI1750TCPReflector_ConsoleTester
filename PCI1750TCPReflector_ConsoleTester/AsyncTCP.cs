@@ -140,11 +140,6 @@ namespace PCI1750TCPReflector_ConsoleTester
                 else
                 {
                     // All the data has arrived; put it in response.  
-                    if (state.sb.Length > 1)
-                    {
-                        
-                        //response = state.sb.ToString();
-                    }
                     response[0] = state.buffer[0];
                     response[1] = state.buffer[1];
                     response[2] = state.buffer[2];

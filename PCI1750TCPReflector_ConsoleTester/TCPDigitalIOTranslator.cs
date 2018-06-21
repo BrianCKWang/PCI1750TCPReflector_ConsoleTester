@@ -128,7 +128,6 @@ namespace PCI1750TCPReflector_ConsoleTester
         {
             commandSent /= 10;
             commandSent %= 10;
-            commandSent++;
             return (byte)(commandSent);
         }
         public int getTCPCommand(byte projectNum, byte robotNum, byte command)
@@ -232,7 +231,7 @@ namespace PCI1750TCPReflector_ConsoleTester
         {
             
             int robotCode = robotNum;
-            robotCode += 2;
+            robotCode += 1;
             return (byte)robotCode;
         }
         public static void populateDictionary()
@@ -259,25 +258,25 @@ namespace PCI1750TCPReflector_ConsoleTester
                 Dic_TCPtoDIO_robotResponse.Add(0x07, 0b10111);
 
                 //
-                Dic_DIOtoTCP_command.Add(1, 11);
-                Dic_DIOtoTCP_command.Add(2, 12);
-                Dic_DIOtoTCP_command.Add(3, 13);
-                Dic_DIOtoTCP_command.Add(4, 14);
-                Dic_DIOtoTCP_command.Add(5, 15);
+                Dic_DIOtoTCP_command.Add(1, 0);
+                Dic_DIOtoTCP_command.Add(2, 1);
+                Dic_DIOtoTCP_command.Add(3, 2);
+                Dic_DIOtoTCP_command.Add(4, 3);
+                Dic_DIOtoTCP_command.Add(5, 4);
 
                 //Project number
-                Dic_DIOtoTCP_projectNumber.Add(1, 6);    //HMI project 1 is PM project 6
+                Dic_DIOtoTCP_projectNumber.Add(1, 1);    //HMI project 1 is PM project 6
                 Dic_DIOtoTCP_projectNumber.Add(2, 2);    //HMI project 2 is PM project 2
 
-                Dic_TCPtoDIO_projectNumber.Add(6, 1);    //PM project 6 is HMI project 1 
+                Dic_TCPtoDIO_projectNumber.Add(1, 1);    //PM project 6 is HMI project 1 
                 Dic_TCPtoDIO_projectNumber.Add(2, 2);    //PM project 2 is HMI project 2 
 
                 //RobotCommand
-                Dic_RobotCommand.Add(6, 1); //Start
-                Dic_RobotCommand.Add(7, 2); //Pause
-                Dic_RobotCommand.Add(8, 3); //Stop
-                Dic_RobotCommand.Add(9, 4); //Get Status
-                Dic_RobotCommand.Add(10, 6);//Reset emergency stop
+                Dic_RobotCommand.Add(5, 5); //Start
+                Dic_RobotCommand.Add(6, 6); //Pause
+                Dic_RobotCommand.Add(7, 7); //Stop
+                Dic_RobotCommand.Add(8, 8); //Get Status
+                Dic_RobotCommand.Add(9, 9);//Reset emergency stop
             }
             catch (ArgumentException)
             {
