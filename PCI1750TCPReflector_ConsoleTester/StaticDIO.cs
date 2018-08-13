@@ -28,27 +28,33 @@ namespace PCI1750TCPReflector_ConsoleTester
         }
         public byte ProjectNum
         {
-            get {
-                if (!StaticIO_firstTime) { UpdateStaticDI(); }
-                return _projectNum; }
+            get
+            {
+                UpdateStaticDI();
+                return _projectNum;
+            }
         }
         public byte RobotNum
         {
-            get {
-                if (!StaticIO_firstTime) { UpdateStaticDI(); }
-                return _robotNum; }
+            get
+            {
+                UpdateStaticDI();
+                return _robotNum;
+            }
         }
         public byte Command
         {
-            get {
-                if (!StaticIO_firstTime) { UpdateStaticDI(); }
-                return _command; }
+            get
+            {
+                UpdateStaticDI();
+                return _command;
+            }
         }
         public byte Execute
         {
             get
             {
-                if (!StaticIO_firstTime) { UpdateStaticDI(); }
+                UpdateStaticDI();
                 return _execute;
             }
         }
@@ -56,7 +62,7 @@ namespace PCI1750TCPReflector_ConsoleTester
         {
             get
             {
-                if (!StaticIO_firstTime) { UpdateStaticDI(); }
+                UpdateStaticDI();
                 return _statusAck;
             }
         }

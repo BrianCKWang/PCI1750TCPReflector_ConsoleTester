@@ -55,6 +55,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StaticDIO.cs" />
     <Compile Include="TCPDigitalIOTranslator.cs" />
+    <Compile Include="TCP_PlugIn.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

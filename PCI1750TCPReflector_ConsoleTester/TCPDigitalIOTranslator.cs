@@ -10,7 +10,9 @@ namespace PCI1750TCPReflector_ConsoleTester
     {
         private bool _showVerboseMessage;
         private static Dictionary<byte, byte> Dic_TCPtoDIO_projectResponse = new Dictionary<byte, byte>();
+        private static Dictionary<byte, string> Dic_TCPtoString_projectResponse = new Dictionary<byte, string>();
         private static Dictionary<byte, byte> Dic_TCPtoDIO_robotResponse = new Dictionary<byte, byte>();
+        private static Dictionary<byte, string> Dic_TCPtoString_robotResponse = new Dictionary<byte, string>();
         private static Dictionary<byte, byte> Dic_DIOtoTCP_command = new Dictionary<byte, byte>();
         private static Dictionary<byte, byte> Dic_DIOtoTCP_projectNumber = new Dictionary<byte, byte>();
         private static Dictionary<byte, byte> Dic_TCPtoDIO_projectNumber = new Dictionary<byte, byte>();
@@ -106,6 +108,43 @@ namespace PCI1750TCPReflector_ConsoleTester
             }
             return fullMessage;
 
+        }
+        public string getStatusStringfromTCPResponse(byte[] response)
+        {
+            short commandSent = 0;
+            byte responseCode = 0;
+            string PM_Response = "";
+
+            if (response.Length >= 4)
+            {
+                commandSent = (short)(response[1] | response[0] << 8);
+                Console.WriteLine("commandSent: {0}.", commandSent);
+                responseCode = response[3];
+                Console.WriteLine("responseCode: {0}.", responseCode);
+                if (isProjectCommand(commandSent))
+                {
+                    try
+                    {
+                        Dic_TCPtoString_projectResponse.TryGetValue(responseCode, out PM_Response);
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                        Console.WriteLine("Key = {0} is not found.", commandSent);
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        Dic_TCPtoString_robotResponse.TryGetValue(responseCode, out PM_Response);
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                        Console.WriteLine("Key = {0} is not found.", commandSent);
+                    }
+                }
+            }
+            return PM_Response;
         }
         private bool isProjectCommand(short commandSent)
         {
@@ -248,6 +287,15 @@ namespace PCI1750TCPReflector_ConsoleTester
                 Dic_TCPtoDIO_projectResponse.Add(0x04, 0b00111);
                 Dic_TCPtoDIO_projectResponse.Add(0x05, 0b01000);
 
+                Dic_TCPtoString_projectResponse.Add(0x01, "Running");
+                Dic_TCPtoString_projectResponse.Add(0x02, "Stopped");
+                Dic_TCPtoString_projectResponse.Add(0x03, "Configuratino Error");
+                Dic_TCPtoString_projectResponse.Add(0x04, "No License");
+                Dic_TCPtoString_projectResponse.Add(0x05, "Error");
+                Dic_TCPtoString_projectResponse.Add(0x06, "Open");
+                Dic_TCPtoString_projectResponse.Add(0x07, "Closed");
+                Dic_TCPtoString_projectResponse.Add(0x08, "Modified");
+
                 //Robot status
                 Dic_TCPtoDIO_robotResponse.Add(0x01, 0b10001);
                 Dic_TCPtoDIO_robotResponse.Add(0x03, 0b10010);
@@ -256,6 +304,14 @@ namespace PCI1750TCPReflector_ConsoleTester
                 Dic_TCPtoDIO_robotResponse.Add(0x05, 0b10101);
                 Dic_TCPtoDIO_robotResponse.Add(0x06, 0b10110);
                 Dic_TCPtoDIO_robotResponse.Add(0x07, 0b10111);
+
+                Dic_TCPtoString_robotResponse.Add(0x01, "Running");
+                Dic_TCPtoString_robotResponse.Add(0x02, "Stopped");
+                Dic_TCPtoString_robotResponse.Add(0x03, "Paused");
+                Dic_TCPtoString_robotResponse.Add(0x04, "Shutdown");
+                Dic_TCPtoString_robotResponse.Add(0x05, "Emergency Stopped");
+                Dic_TCPtoString_robotResponse.Add(0x06, "Error");
+                Dic_TCPtoString_robotResponse.Add(0x07, "Manual Mode");
 
                 //
                 Dic_DIOtoTCP_command.Add(1, 0);
