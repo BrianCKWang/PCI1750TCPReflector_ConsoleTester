@@ -2,4 +2,4 @@
 
 ## Project Objective
 
-* Test tool for TCPReflector communication test simulation.
+* TCPReflector communication compatibility test between Adventech PCI1750 DIO interface and PickMaster.
